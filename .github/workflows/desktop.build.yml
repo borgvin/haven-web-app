@@ -38,6 +38,9 @@ jobs:
       with:
         node-version: '18'
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+
     - name: Install client dependencies
       working-directory: client
       run: |
