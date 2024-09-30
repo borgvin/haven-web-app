@@ -50,7 +50,7 @@ jobs:
       working-directory: client
       run: |
           git config --global url."https://".insteadOf git://
-          npm install
+          npm install --include=dev
 
     - name: Audit client dependencies
       working-directory: client
