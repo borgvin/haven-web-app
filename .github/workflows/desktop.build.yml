@@ -74,11 +74,6 @@ jobs:
       run: |
           npm install
 
-    - name: Install latest wallet core
-      working-directory: haven-desktop-app
-      run: |
-          npm install borgvin/haven-web-core#v4-build-test --save
-
     - name: Audit backend dependencies
       working-directory: haven-desktop-app
       run: |

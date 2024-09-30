@@ -28,7 +28,7 @@
   "dependencies": {
     "axios": "^1.7.7",
     "electron-squirrel-startup": "^1.0.0",
-    "haven-wallet-core": "^3.3.2",
+    "haven-wallet-core": "github:borgvin/haven-web-core#v4-build-test",
     "rxjs": "^7.5.7"
   },
   "devDependencies": {
