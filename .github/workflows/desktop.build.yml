@@ -20,19 +20,11 @@ jobs:
     strategy:
       matrix:
         system:
-          - os: "windows-latest"
-            path: "squirrel.windows/x64/"
-          - os: "macos-13"
+          - os: "macos-latest"
             path: ""
-          - os: ubuntu-latest
-            path: "deb/x64/"
         network:
           - id: 0
             name: "mainnet"
-          - id: 1
-            name: "testnet"
-          - id: 2
-            name: "stagenet"
 
     steps:
     - uses: actions/setup-python@v5
