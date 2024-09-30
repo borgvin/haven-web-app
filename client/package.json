@@ -16,6 +16,7 @@
     "nth-check": "^2.1.1",
     "os": "^0.1.2",
     "path-browserify": "^1.0.1",
+    "postcss": "^8.4.47",
     "process": "0.11.10",
     "querystring-es3": "^0.2.1",
     "react": "^18.3.1",
@@ -77,6 +78,7 @@
     "child_process": false
   },
   "overrides": {
-    "nth-check": "$nth-check"
+    "nth-check": "$nth-check",
+    "postcss": "$postcss"
   }
 }
