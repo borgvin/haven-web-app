@@ -41,7 +41,6 @@ jobs:
     - name: Install client dependencies
       working-directory: client
       run: |
-          git config --global url."https://".insteadOf git://
           npm install
 
     - name: Audit client dependencies
