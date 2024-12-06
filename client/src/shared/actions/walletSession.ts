@@ -84,7 +84,7 @@ export const startWalletSession = (
   // will be responsible for data updates
   export const initWallet = () => {
     return async (dispatch: any) => {
-      dispatch(getXHVBalance());
+      await dispatch(getXHVBalance());
       dispatch(getAllTransfers());
       dispatch(getAddresses());
       dispatch(refresh());
