@@ -39,7 +39,7 @@ const walletHandler: ProxyHandler<typeof walletCore> = {
         }
 
 
-        if (name === "transfer" || name === "sweep" || name == "audit") {
+        if (name === "transfer" || name === "sweep" || name === "audit") {
           const txs: MoneroTxWallet[] = response.map(
             (jsonTx: any) => new MoneroTxWallet(jsonTx)
           );

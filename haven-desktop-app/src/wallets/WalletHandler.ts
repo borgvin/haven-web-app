@@ -108,7 +108,7 @@ export class WalletHandler {
       return addressJsonObjects;
 
       }
-      if (methodName === "createSubAddress" || methodName === "getBalance" || methodName === "getUnlockedBalance" || methodName == "getUnauditedBalance" || methodName === "getCirculatingSupply") {
+      if (methodName === "createSubAddress" || methodName === "getBalance" || methodName === "getUnlockedBalance" || methodName === "getUnauditedBalance" || methodName === "getCirculatingSupply") {
         // serialize address and balance data
         return response.toJson();
       }

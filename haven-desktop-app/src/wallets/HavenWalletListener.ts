@@ -60,7 +60,10 @@ export class HavenWalletListener extends MoneroWalletListener {
   // @ts-ignore
   onBalancesChanged(
     newBalance: BigInteger,
-    newUnlockedBalance: BigInteger, assetType: string
+    newUnlockedBalance: BigInteger,
+    newUnauditedBalance: BigInteger,
+    newUnlockedUnauditedBalance: BigInteger,
+    assetType: string
   ): void {
     const walletupdate: WalletRequest = {
       methodName: "onBalancesChanged",
