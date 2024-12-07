@@ -26,70 +26,63 @@ export const startWalletSession = (
   
       if (isWeb()) {
         dispatch(setWebConfig());
-      } 
-  
-  
+      }
+
       // initialize own connection to daemon ( needed for fetching block headers )
       dispatch({ type: START_WALLET_SESSION, payload: walletName });
       dispatch(connectAppToDaemon());
-      // fetch latest prices once at start
-      dispatch(getLastBlockHeader());
 
-  
+      await dispatch(initWallet());
+
       // start wallet listeners
       const listener = new HavenWalletListener(dispatch, getStore);
       if (isWeb()) {
-        dispatch(getCirculatingSupply());
-        dispatch(getBlockCap());
-        walletProxy.addWalletListener(listener);
+        await walletProxy.addWalletListener(listener);
       } else {
-        if(getStore().connectedNode.isWalletConectedToDaemon) {
-          dispatch(getCirculatingSupply());
-          dispatch(getBlockCap());
-        }
-        walletProxy.addWalletListener();
+        await walletProxy.addWalletListener();
         initDesktopWalletListener(listener);
       }
 
-      await dispatch(initWallet());
-      const syncHeight = await walletProxy.getSyncHeight();
-      dispatch({type: SET_RESTORE_HEIGHT, payload: syncHeight});
-      walletProxy.syncWallet();
-  
+      // for desktop, the following is handled in
+      // client/src/platforms/desktop/watcher.ts
+      if (isWeb()) {
+        await dispatch(initChainData());
+        walletProxy.syncWallet();
+      }
     };
   };
 
-
-
   export const initChainData = () => {
-
     return async(dispatch: any) => {
+      await dispatch(getLastBlockHeader());
+      await dispatch(getCirculatingSupply());
+      await dispatch(getBlockCap());
 
-    const chainHeight = await walletProxy.getChainHeight();
-    const nodeHeight = await walletProxy.getNodeHeight();
-    const walletHeight = await walletProxy.getWalletHeight();
-    const chainHeights: Partial<Chain> = {
-      walletHeight,
-      nodeHeight,
-      chainHeight: chainHeight < nodeHeight? nodeHeight : chainHeight,
-    } as Partial<Chain>;
+      const chainHeight = await walletProxy.getChainHeight();
+      const nodeHeight = await walletProxy.getNodeHeight();
+      const walletHeight = await walletProxy.getWalletHeight();
+      const chainHeights: Partial<Chain> = {
+        walletHeight,
+        nodeHeight,
+        chainHeight: chainHeight < nodeHeight? nodeHeight : chainHeight,
+      } as Partial<Chain>;
 
-    dispatch(onWalletSyncUpdateSucceed(chainHeights));
-    dispatch(updateHavenFeatures(nodeHeight));
+      await dispatch(onWalletSyncUpdateSucceed(chainHeights));
+      await dispatch(updateHavenFeatures(nodeHeight));
     }
-
   }
   
   // init some basic data before wallet listener
   // will be responsible for data updates
   export const initWallet = () => {
     return async (dispatch: any) => {
+      const syncHeight = await walletProxy.getSyncHeight();
+      dispatch({type: SET_RESTORE_HEIGHT, payload: syncHeight});
       await dispatch(getXHVBalance());
-      dispatch(getAllTransfers());
-      dispatch(getAddresses());
-      dispatch(refresh());
-      dispatch(initChainData());
-      dispatch(getAuditStatus());
+      await dispatch(getAllTransfers());
+      await dispatch(getAddresses());
+      await dispatch(getAuditStatus());
+      await dispatch(refresh());
     };
   };
 
