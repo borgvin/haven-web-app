@@ -104,7 +104,8 @@ export class Audit extends Component<AuditProps, AuditState> {
     let balanceList: JSX.Element[] = [];
 
     balances.forEach((balance, ticker) => {
-      const balanceStr = balance.toString();
+      const { quotient, remainder } = balance.divmod(10**12);
+      const balanceStr = quotient.toString() + "." + remainder.toString().padStart(12, "0");
 
       balanceList.push(
         <AssetRow>
