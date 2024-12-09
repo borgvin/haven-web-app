@@ -13,6 +13,7 @@ import { getCirculatingSupply } from "./circulatingSupply";
 import { getBlockCap } from "./blockCap";
 import { getAuditStatus } from "shared/actions/auditStatus";
 import { getAllTransfers } from "./transferHistory";
+import { updateOnBlockSync } from "shared/actions/walletSession";
 
 export class HavenWalletListener extends MoneroWalletListener {
   // we keep a dispatch and getStore instance in the walletlistener
@@ -45,21 +46,30 @@ export class HavenWalletListener extends MoneroWalletListener {
     message: string
   ): void {
 
-    const syncDistance = endHeight - height;
+    // height/startHeight are 'ids' of the blocks
+    // endHeight is the block count
+    // i.e. if we're at genesis then height/startHeight are 0 and endHeight is 1
+    height += 1;
+    startHeight += 1;
+
+    const syncDistance = endHeight - height + 1;
 
     let updateInterval = Math.pow(10, Math.floor(Math.log10(syncDistance)));
     updateInterval = Math.min(1000, updateInterval);
     updateInterval = Math.max(updateInterval, 1);
+
+    if (height === endHeight) {
+      this.dispatch(updateOnBlockSync(height));
+    }
   
     if (syncDistance % updateInterval === 0 || height === startHeight)  {
       const chain: Partial<Chain> = {
-        walletHeight: height,
-        nodeHeight:endHeight
+        walletHeight: height
       };
-      logM(height);
 
       this.dispatch(onWalletSyncUpdateSucceed(chain));
     }
+
   }
   /**
    * Invoked when a new block is added to the chain.
@@ -70,13 +80,11 @@ export class HavenWalletListener extends MoneroWalletListener {
     const store: HavenAppState = this.getStore();
     const syncState = selectSyncState(store);
 
+    // as above, height is the block 'id'
+    height += 1;
+
     if (!syncState.isSyncing) {
-      this.dispatch(getLastBlockHeader());
-      this.dispatch(updateHavenFeatures(height));
-      this.dispatch(getCirculatingSupply());
-      this.dispatch(getBlockCap());
-      this.dispatch(getAuditStatus());
-      this.dispatch(getAllTransfers());
+      //this.dispatch(updateOnBlockSync(height));
       if (store.chain.chainHeight < height) {
         this.dispatch(
           onWalletSyncUpdateSucceed({ nodeHeight: height, chainHeight: height })
@@ -113,7 +121,6 @@ export class HavenWalletListener extends MoneroWalletListener {
       lockedUnauditedBalance: unauditedBalance.subtract(unlockedUnauditedBalance),
     };
 
-    logM(assetType);
     this.dispatch(getBalancesSucceed({ [assetType as Ticker] : xhvBalance }));
     // this.dispatch(getAllTransfers());
   }

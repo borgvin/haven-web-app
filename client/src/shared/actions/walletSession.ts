@@ -78,6 +78,14 @@ export const startWalletSession = (
     return async (dispatch: any) => {
       const syncHeight = await walletProxy.getSyncHeight();
       dispatch({type: SET_RESTORE_HEIGHT, payload: syncHeight});
+
+      const walletHeight = await walletProxy.getWalletHeight();
+      const chain: Partial<Chain> = {
+        chainHeight: walletHeight,
+        walletHeight: walletHeight
+      };
+      await dispatch(onWalletSyncUpdateSucceed(chain));
+
       await dispatch(getXHVBalance());
       await dispatch(getAllTransfers());
       await dispatch(getAddresses());
@@ -86,6 +94,16 @@ export const startWalletSession = (
     };
   };
 
+  export const updateOnBlockSync = (height: any) => {
+    return async (dispatch: any) => {
+      dispatch(getLastBlockHeader());
+      dispatch(getCirculatingSupply());
+      dispatch(getBlockCap());
+      dispatch(getAllTransfers());
+      dispatch(updateHavenFeatures(height));
+      dispatch(getAuditStatus());
+    };
+  };
 
   export const closeWallet = (isWeb: boolean) => {
     return async (dispatch: any, getState: () => HavenAppState) => {
